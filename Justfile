@@ -5,19 +5,24 @@
 test_redmine_container:="redtime-test-redmine"
 redmine_port:="3000"
 test_db_path:="misc/redmine-test-db.db"
-test_api_key:="3fd39a4662ad2fa4b7bbbab51a83097cce0c409d"
 
 
 #####################################################
 # Public recipes
 #####################################################
 
+# Initialize the test redmine server
 redmine-init:
 	@echo "Init. test redmine docker container"
 	docker create -p {{redmine_port}}:3000 --name {{test_redmine_container}} redmine && just redmine-start && just redmine-import-db
 
+	@echo "Install sqlite3 to retrieve API key"
+	docker exec -it {{test_redmine_container}} sh -c "apt-get update && apt-get install -y sqlite3"
+
 	@echo "Init test .env file"
 	just init-env-config
+
+	@printf "\n\033[1mRedmine server successfully initialized. Open http://$(just redmine-get-ip):{{redmine_port}} to access web interface.\033[0m\n"
 
 # Start the test redmine server. If doesn't exists, creates it and initialize a test database. Prints the IP address
 redmine-start:
@@ -54,6 +59,11 @@ redmine-export-db:
 redmine-get-ip:
 	@docker inspect -f '{{{{range.NetworkSettings.Networks}}{{{{.IPAddress}}{{{{end}}' {{test_redmine_container}}
 
+# Get the redmine API key
+[private]
+redmine-get-api_key:
+	@docker exec -it {{test_redmine_container}} sqlite3 /usr/src/redmine/sqlite/redmine.db "select value from tokens where action='api'" | sed 's/.$//'
+
 # Import the sqlite db from the host to the test redmine container
 [private]
 redmine-import-db:
@@ -62,7 +72,7 @@ redmine-import-db:
 # Inits the test .env file
 [private]
 init-env-config:
-	echo "REDMINE_API_KEY=\"{{test_api_key}}\"" > .env
+	echo "REDMINE_API_KEY=\"$(just redmine-get-api_key)\"" > .env
 	echo "REDMINE_URL=\"http://$(just redmine-get-ip):3000\"" >> .env
 
 [private]

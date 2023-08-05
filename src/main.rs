@@ -108,7 +108,6 @@ fn main() {
         println!("> Task status is \"{}\", changing to \"{}\"", &chosen_issue.status.name, &config.status.working);
         
         let work_status_id = infos.find_status_id(&config.status.working).expect(&format!("Unknown status {}", config.status.working));
-        println!(">> {}", work_status_id);
         redmine.update_issue_status(chosen_issue.id, work_status_id).unwrap();
     }
 
