@@ -1,5 +1,5 @@
 [package]
-name = "redmine-api-access"
+name = "redtime-rs"
 version = "0.1.0"
 edition = "2021"
 
