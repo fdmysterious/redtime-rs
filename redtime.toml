@@ -1,8 +1,12 @@
 [general]
-project_identifier="test-project-2"
-add_work_hours=3.75 # Number of added work hours when using this SW
-logfile="time_entries.csv"
+project_identifier="test-project" # Identifier of the project
+add_work_hours=3.75               # Number of added work hours
+logfile="time_entries.csv"        # Path to output CSV log file
 
 [status]
-new="Nouveau"
-working="En cours"
+new="New"                         # Status name for detecting new tasks
+working="Ongoing"                 # Status name set when starting a new task
+
+# Additional configuration goes into the `.env` file:
+# - REDMINE_API_KEY sets the API key used to interact with the Redmine API
+# - REDMINE_URL sets the URL to the redmine instance.

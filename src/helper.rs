@@ -79,14 +79,7 @@ impl RedmineOps {
         Ok(())
     }
 
-    /// Updates the progress of the requested issue
-    pub fn update_issue_progress(&self, issue_id: u64, new_progress: u64) -> Result<(), Box<dyn std::error::Error>> {
-        let endpoint = UpdateIssue::builder()
-                .id(issue_id)
-                .build()
-        ;
-    }
-
+    /// Adds a time tracking entry to an issue
     pub fn add_time_entry(&self,
         issue_id: u64,
         hours: f64,
