@@ -1,0 +1,14 @@
+[package]
+name = "redmine-api-access"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "0.4.26"
+dotenvy = "0.15.7"
+inquire = "0.6.2"
+redmine-api = "0.1.9"
+serde = {version="1.0.180", features=["serde_derive"]}
+toml = "0.7.6"

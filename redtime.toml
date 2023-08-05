@@ -1,0 +1,8 @@
+[general]
+project_identifier="test-project-2"
+add_work_hours=3.75 # Number of added work hours when using this SW
+logfile="time_entries.csv"
+
+[status]
+new="Nouveau"
+working="En cours"
