@@ -39,6 +39,9 @@ use std::fmt::Display;
 use redmine_api::api::issues::Issue;
 use redmine_api::api::enumerations::TimeEntryActivity;
 
+use log::debug;
+use env_logger;
+
 /// Some utility class using some ID and string
 #[derive(Debug)]
 struct IdChoice {
@@ -71,6 +74,8 @@ impl From<&TimeEntryActivity> for IdChoice {
 }
 
 fn main() {
+    env_logger::init();
+
     // Load config
     dotenvy::dotenv().unwrap();
     let config: RedtimeConfig = toml::from_str(&fs::read_to_string("redtime.toml").unwrap()).unwrap();
@@ -80,11 +85,17 @@ fn main() {
     let redmine = RedmineOps::new(redmine);
 
     // Load infos from redmine
-    let infos   = RedmineInfos::fetch(&redmine, &config.general.project_identifier).unwrap();
+    let infos       = RedmineInfos::fetch(&redmine, &config.general.project_identifier).unwrap();
+    let status_new  = infos.find_status_id(&config.status.new    ).expect("Could not find status ID for indicated new status");
+    let status_work = infos.find_status_id(&config.status.working).expect("Could not find status ID for working status"      );
+
+    debug!("Got status_new = {}, status_work={}", status_new, status_work);
     
-    // Ask issue
-    let issues  = redmine.fetch_ongoing_issues(infos.project_id).unwrap();
-    let choices = issues.iter().map(IdChoice::from).collect();
+    // Ask issue -> Only display issues that have the "new" or "working" status
+    let choices = issues.iter()
+        .filter(|i| (i.status.id == status_new) || (i.status.id == status_work))
+        .map(IdChoice::from)
+        .collect();
 
     let chosen  = Select::new(
         "Please choose an issue",
@@ -106,9 +117,7 @@ fn main() {
     // Check task status
     if(&chosen_issue.status.name == &config.status.new) {
         println!("> Task status is \"{}\", changing to \"{}\"", &chosen_issue.status.name, &config.status.working);
-        
-        let work_status_id = infos.find_status_id(&config.status.working).expect(&format!("Unknown status {}", config.status.working));
-        redmine.update_issue_status(chosen_issue.id, work_status_id).unwrap();
+        redmine.update_issue_status(chosen_issue.id, status_work).unwrap();
     }
 
     // Add time tracking activity

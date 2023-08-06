@@ -23,10 +23,10 @@ pub struct RedmineInfos {
 
 impl RedmineInfos {
     pub fn fetch(client: &RedmineOps, project_name: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let project_id     = client.fetch_project_id(project_name)?.ok_or(RedtimeError::ProjectNotFound(String::from(project_name)))?;
-        let issue_statuses = client.fetch_issue_statuses()?;
-        let activities     = client.fetch_activities()?;
-        let categories     = client.fetch_categories(project_id)?;
+        let project_id     = client.fetch_project_id(project_name).or(Err(RedtimeError::FetchProjectsError))?.ok_or(RedtimeError::ProjectNotFound(String::from(project_name)))?;
+        let issue_statuses = client.fetch_issue_statuses().or(Err(RedtimeError::FetchStatusesError))?;
+        let activities     = client.fetch_activities().or(Err(RedtimeError::FetchActivitiesError))?;
+        let categories     = client.fetch_categories(project_id).or(Err(RedtimeError::FetchCategoriesError))?;
 
 
         Ok(Self {

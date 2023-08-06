@@ -8,7 +8,9 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.26"
 dotenvy = "0.15.7"
+env_logger = "0.10.0"
 inquire = "0.6.2"
+log = "0.4.19"
 redmine-api = "0.1.9"
 serde = {version="1.0.180", features=["serde_derive"]}
 toml = "0.7.6"
