@@ -9,6 +9,17 @@ entries in [Redmine](https://www.redmine.org). It is also a learning
 project around the Rust language.
 
 
+Dumb install
+============
+
+If you know what this project does and you want to just install this tool,
+you can do:
+
+```
+cargo install --git https://github.com/fdmysterious/redtime-rs.git
+```
+
+
 Test this project
 =====================
 
@@ -129,3 +140,4 @@ and can be removed using:
 ```
 just redmine-remove
 ```
+
