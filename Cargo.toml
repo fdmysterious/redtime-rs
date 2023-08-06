@@ -12,3 +12,8 @@ inquire = "0.6.2"
 redmine-api = "0.1.9"
 serde = {version="1.0.180", features=["serde_derive"]}
 toml = "0.7.6"
+
+[[bin]]
+path = "src/main.rs"
+name = "redtime"
+test = false
