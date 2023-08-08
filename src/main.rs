@@ -40,7 +40,9 @@ use redmine_api::api::issues::Issue;
 use redmine_api::api::enumerations::TimeEntryActivity;
 
 use log::debug;
+
 use env_logger;
+use better_panic;
 
 /// Some utility class using some ID and string
 #[derive(Debug)]
@@ -75,6 +77,7 @@ impl From<&TimeEntryActivity> for IdChoice {
 
 fn main() {
     env_logger::init();
+    better_panic::install();
 
     // Load config
     dotenvy::dotenv().unwrap();
@@ -92,6 +95,7 @@ fn main() {
     debug!("Got status_new = {}, status_work={}", status_new, status_work);
     
     // Ask issue -> Only display issues that have the "new" or "working" status
+    let issues  = redmine.fetch_ongoing_issues(infos.project_id).expect("Could not fetch issues");
     let choices = issues.iter()
         .filter(|i| (i.status.id == status_new) || (i.status.id == status_work))
         .map(IdChoice::from)
@@ -115,7 +119,7 @@ fn main() {
     let comment = Text::new("What is the purpose of your work?").prompt().unwrap();
 
     // Check task status
-    if(&chosen_issue.status.name == &config.status.new) {
+    if &chosen_issue.status.name == &config.status.new {
         println!("> Task status is \"{}\", changing to \"{}\"", &chosen_issue.status.name, &config.status.working);
         redmine.update_issue_status(chosen_issue.id, status_work).unwrap();
     }

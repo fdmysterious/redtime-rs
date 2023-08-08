@@ -141,3 +141,7 @@ and can be removed using:
 just redmine-remove
 ```
 
+TODO
+====
+
+- [ ] Better error than a panic when no issue is available for work
